@@ -8,17 +8,30 @@ enum MachineStates{
   Eject
 };
 
+/*
+enum ReadyPucks {
+  None,
+  White,
+  Red, 
+  Blue
+};*/
+
 MachineStates curState = Waiting;
+//ReadyPucks ready = None;
 
 //Moduels
 int modInput = 1;
 int modOutput = 2;
 int modAnalog = 3;
+int robInput = 1;
 
 //Inputs
 int pulse = 1;
 int lbIn = 2;
 int lbOut = 3;
+int lbWhite = 4;
+int lbRed = 5;
+int lbBlue = 6;
 
 //Outputs
 int conv = 1;
@@ -26,6 +39,9 @@ int compressor = 2;
 int ejectW = 3;
 int ejectR = 4;
 int ejectB = 5;
+int robWhite = 6;
+int robRed = 7;
+int robBlue = 8;
 
 //Analog inputs
 int color = 1;
@@ -92,6 +108,7 @@ void UseEjector(char c){
   P1.writeDiscrete(false,modOutput,tempPin);
 }
 
+/*
 void ColorForRob(char targetColor){
   if (targetColor = 'w'){
 
@@ -100,14 +117,40 @@ void ColorForRob(char targetColor){
   } else{
 
   }
-}
+}*/
+
+/*
+bool RobInput(modInput, robInput){
+  return !P1.readDiscrete(modInput,robInput);
+}*/
 
 void loop(){
   
   /*bool isOn = P1.readDiscrete(1,2);  // 1st moduel 2nd pin
   Serial.println(isOn); // 1 true, 0 false
   delay(100);*/
+  bool whitePuck = !P1.readDiscrete(modInput,lbWhite);
+  bool redPuck = !P1.readDiscrete(modInput,lbRed);
+  bool bluePuck = !P1.readDiscrete(modInput,lbBlue);
 
+  if (whitePuck == true) {
+    P1.writeDiscrete(true,modOutput,robWhite);
+    Serial.println("White Avaliable");
+  } else if(whitePuck == false){
+    P1.writeDiscrete(false,modOutput,robWhite);
+  }
+  if (redPuck == true){
+    P1.writeDiscrete(true,modOutput,robRed);
+    Serial.println("Red Avaliable");
+  } else if(redPuck == false){
+    P1.writeDiscrete(false,modOutput,robRed);
+  }
+  if (bluePuck == true){
+    P1.writeDiscrete(true,modOutput,robBlue);
+    Serial.println("Blue Avaliable");
+  }else if(bluePuck == false){
+    P1.writeDiscrete(false,modOutput,robBlue);
+  }
 
 
   switch (curState){
@@ -137,7 +180,7 @@ void loop(){
           distToEject = 9;
           targetColor = 'r';
         } else{
-          distToEject = 15;
+          distToEject = 14;
           targetColor ='b';
         }
         ToggleCompressor(true);
